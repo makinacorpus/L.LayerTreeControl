@@ -703,6 +703,7 @@ function LeafletProvider(map) {
       url.searchParams.set('request', 'GetLegendGraphic');
       url.searchParams.set('format', 'image/png');
       url.searchParams.set('layer', serviceLayers);
+      url.searchParams.set('version', layer.version);
 
       var legend = {};
       legend.largeImageUrl = `${url.toString()}`;
