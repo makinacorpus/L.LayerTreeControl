@@ -56,9 +56,35 @@ L.Control.LayerTreeControl = L.Control.extend({
     }
   },
 
+  // adapted from Leaflet's L.control.layers
+  expand() {
+    this._container.classList.add('layer-tree-control-expanded');
+    this._treeContainer.style.height = null;
+    const acceptableHeight = this._map.getSize().y - (this._container.offsetTop + 50);
+    if (acceptableHeight < this._treeContainer.clientHeight) {
+      this._treeContainer.classList.add('leaflet-control-layers-scrollbar');
+      this._treeContainer.style.height = `${acceptableHeight}px`;
+    } else {
+      this._treeContainer.classList.remove('leaflet-control-layers-scrollbar');
+    }
+    return this;
+  },
+
+  // adapted from Leaflet's L.control.layers
+  collapse(ev) {
+    // On touch devices `pointerleave` is fired while clicking on a checkbox.
+    // The control was collapsed instead of adding the layer to the map.
+    // So we allow collapse if it is not touch and pointerleave.
+    if (!ev || !(ev.type === 'pointerleave' && ev.pointerType === 'touch')) {
+      this._container.classList.remove('layer-tree-control-expanded');
+    }
+    return this;
+  },
+
   onAdd: function (map) {
     var container = L.DomUtil.create('div', 'layer-tree-control');
-    this._treeContainer = L.DomUtil.create('div', '', container);
+    var collapsed = this.options.collapsed;
+    this._treeContainer = L.DomUtil.create('div', 'layer-tree-control-list', container);
     this._esriProvider = new EsriProvider(map);
     this._leafletProvider = new LeafletProvider(map);
 
@@ -82,6 +108,33 @@ L.Control.LayerTreeControl = L.Control.extend({
       const layerObj = this._layers[i];
       this.addLayer(layerObj);
     }
+
+    if (collapsed) {
+			this._map.on('click', this.collapse, this);
+
+			if (!L.Browser.android) {
+				L.DomEvent.on(container, {
+					mouseenter: this.expand,
+					mouseleave: this.collapse
+				}, this);
+			}
+		}
+
+    var link = this._link = L.DomUtil.create('a', 'layer-tree-control-toggle', container);
+    link.href = '#';
+		link.title = 'Layers';
+		link.setAttribute('role', 'button');
+
+    if (L.Browser.touch) {
+			L.DomEvent.on(link, 'click', L.DomEvent.stop);
+			L.DomEvent.on(link, 'click', this.expand, this);
+		} else {
+			L.DomEvent.on(link, 'focus', this.expand, this);
+		}
+
+		if (!collapsed) {
+			this.expand();
+		}
 
     return this._container;
   },
