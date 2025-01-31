@@ -676,7 +676,7 @@ function LeafletProvider(map) {
       for (i = 0; i < current.children.length; i++) {
         nodeInfo = current.children[i];
         nodeInfo.parentId = current.id;
-        nodeInfo.id = createId(current.id, i);
+        nodeInfo.id = 'layertree-' + L.stamp(nodeInfo);
         child = getTree(nodeInfo);
         node.children.push(child);
       }
@@ -711,10 +711,6 @@ function LeafletProvider(map) {
     }
     // default
     return undefined;
-  };
-
-  var createId = function (mainId, id) {
-    return mainId * 1000 + id;
   };
 
   var getLayersFromTree = function (ids, tree) {
@@ -754,7 +750,7 @@ function LeafletProvider(map) {
         for (i = 0; i < options.children.length; i++) {
           nodeInfo = options.children[i];
           nodeInfo.parentId = layerId;
-          nodeInfo.id = createId(layerId, i);
+          nodeInfo.id = 'layertree-' + L.stamp(nodeInfo);
           subTree = getTree(nodeInfo, {});
           children.push(subTree);
         }

@@ -42,8 +42,8 @@
 				layers: [],
 			});
       
-			var wmsGlobalPopulation = L.tileLayer.wms('https://sedac.ciesin.columbia.edu/geoserver/wms?', {
-				layers: 'gpw-v3:gpw-v3-population-density_2000',
+			var wmsCitiesPopulation = L.tileLayer.wms('https://sampleserver6.arcgisonline.com/arcgis/services/SampleWorldCities/MapServer/WMSServer', {
+				layers: '2',
 				transparent: true,
 				format: 'image/png',
 			});
@@ -67,8 +67,8 @@
 							name: 'Level 1',
 							children: [
 								{
-									name: 'Global Population',
-									layer: wmsGlobalPopulation,
+									name: 'Cities Population (wms)',
+									layer: wmsCitiesPopulation,
 								},
 							],
 						},
