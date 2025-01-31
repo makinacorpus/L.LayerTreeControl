@@ -22,7 +22,7 @@
 
 		<div id="map"></div>
 		<script>
-			var map = L.map('map').setView([34.54, -94.28], 4);
+			var map = L.map('map').setView([47.22775, -1.60832], 12);
 
 			L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 				maxZoom: 15,
@@ -30,50 +30,83 @@
 					'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
 			}).addTo(map);
 
-			var esriSampleUsa = L.esri.dynamicMapLayer({
-				url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer',
-				opacity: 0.7,
-				layers: [],
-			});
+			var zonagePluvial = L.tileLayer.wms(
+				'https://cartographie.nantesmetropole.fr/arcgis/services/PLUm/plum_annexes/MapServer/WMSServer?',
+				{
+					'layers': 'Zonage_pluvial_(I19-03)54824',
+					'transparent': true,
+					'format': 'image/png'
 
-			var esri911CallsHotSpot = L.esri.dynamicMapLayer({
-				url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Energy/Geology/MapServer',
-				opacity: 0.7,
-				layers: [],
-			});
-      
-			var wmsCitiesPopulation = L.tileLayer.wms('https://sampleserver6.arcgisonline.com/arcgis/services/SampleWorldCities/MapServer/WMSServer', {
-				layers: '2',
-				transparent: true,
-				format: 'image/png',
-			});
+				}
+			);
+
+			var zonageEauxUsées = L.tileLayer.wms(
+				'https://cartographie.nantesmetropole.fr/arcgis/services/PLUm/plum_annexes/MapServer/WMSServer?',
+				{
+					'layers': 'Zonage_eaux_usées_(I19-01)7873',
+					'transparent': true,
+					'format': 'image/png'
+
+				}
+			);
+
+			var réseauChaleur = L.tileLayer.wms(
+				'https://cartographie.nantesmetropole.fr/arcgis/services/PLUm/plum_annexes/MapServer/WMSServer?',
+				{
+					'layers': 'Réseau_de_chaleur_(I_07-00)28291',
+					'transparent': true,
+					'format': 'image/png'
+
+				}
+			);
 
 			var layers = [
-				{
-					layer: esriSampleUsa,
-					name: 'Sample USA (esri)',
-					type: 'esriDynamic',
-				},
-				{
-					layer: esri911CallsHotSpot,
-					name: '911 Calls hot spot (esri)',
-					type: 'esriDynamic',
-				},
 				{
 					type: 'leaflet',
 					name: 'Custom tree',
 					children: [
 						{
-							name: 'Level 1',
-							children: [
-								{
-									name: 'Cities Population (wms)',
-									layer: wmsCitiesPopulation,
-								},
-							],
+							name: 'Zonage pluvial',
+							layer: zonagePluvial
 						},
+						{
+							name: 'zonageEauxUsées',
+							layer: zonageEauxUsées,
+
+							// option #1: 1 legend element, 1 URL => displayed inline with the layer name
+							// legend: "images/rocket.png"
+
+							// option #2: multiple legend elements with URL-data images + labels
+							// legend: [
+							//     {
+							//         imageData: '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',
+							//         label: 'the rocket!'
+							//     },
+							//     {
+							//         imageData: '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',
+							//         label: 'the book!'
+							//     }
+							// ],
+
+							// option #3: multiple legend elements with image URLs + labels
+							legend: [
+								{
+									imageUrl: 'images/rocket.png',
+									label: 'the rocket!'
+								},
+								{
+									imageUrl: 'images/book.png',
+									label: 'the book!'
+								}
+							]
+						}
 					],
 				},
+				{
+					type: 'leaflet',
+					name: 'réseauChaleur',
+					layer: réseauChaleur
+				}
 			];
 
 			var layerTreeCtrl = new L.Control.LayerTreeControl(layers, {
